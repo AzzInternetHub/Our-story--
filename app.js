@@ -1,6 +1,6 @@
 const CONFIG = {
   startDate: new Date("2026-07-05T00:00:00"),
-  // REPLACE THE URL BELOW WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+  // DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
   apiEndpoint: "https://script.google.com/macros/s/AKfycbxDeJZ9UDFyKDXUoJwjLZUpgW_rNjlKGNWp0IIvz4K6Dvv6LAxxhcB5Ap1k56z4zDUk/exec",
   currentUser: localStorage.getItem("qalbi_authenticated_user") || null,
   pins: {
@@ -38,7 +38,9 @@ function checkAuth() {
 function selectUser(user) {
   selectedUserAttempt = user;
   document.querySelectorAll(".user-choice-btn").forEach(btn => btn.classList.remove("selected"));
-  if (event && event.target) event.target.classList.add("selected");
+  if (window.event && window.event.target) {
+    window.event.target.classList.add("selected");
+  }
   
   document.getElementById("pinPromptText").innerText = `Enter PIN for ${user}`;
   document.getElementById("pinBox").classList.remove("hidden");
