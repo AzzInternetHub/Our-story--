@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zaroo & Salma — Forever</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-blur"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- Dedicated Login Overlay -->
+  <div id="loginModal" class="login-overlay">
+    <div class="card glass login-card">
+      <div class="heart-pulse">❤️</div>
+      <h2>Zaroo & Salma</h2>
+      <p class="login-sub">Select who is logging in:</p>
+      
+      <div class="user-select-grid">
+        <button class="user-choice-btn" onclick="selectUser('Zaroo')">Zaroo</button>
+        <button class="user-choice-btn" onclick="selectUser('Salma')">Salma</button>
+      </div>
+
+      <div id="pinBox" class="pin-box hidden">
+        <p id="pinPromptText">Enter PIN for Zaroo</p>
+        <input type="password" id="pinInput" maxlength="4" placeholder="••••" pattern="\d*">
+        <button class="glow-btn" onclick="verifyPin()">Unlock Space</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="app-viewport hidden" id="mainApp">
+
+    <!-- Hero Card -->
+    <header class="card glass hero-card">
+      <div class="user-switch-bar">
+        <span class="user-pill active" id="userTag">Viewing as Zaroo</span>
+        <button class="switch-btn" onclick="logout()">Lock App</button>
+      </div>
+
+      <div class="names-row">
+        <h2>Zaroo</h2>
+        <div class="heart-pulse">❤️</div>
+        <h2>Salma</h2>
+      </div>
+
+      <div class="timer-container">
+        <p class="timer-label">IN LOVE FOR</p>
+        <div class="time-grid">
+          <div class="time-unit"><span id="days">000</span><label>Days</label></div>
+          <div class="time-unit"><span id="hours">00</span><label>Hours</label></div>
+          <div class="time-unit"><span id="mins">00</span><label>Mins</label></div>
+          <div class="time-unit"><span id="secs">00</span><label>Secs</label></div>
+        </div>
+        <p class="anniversary-date">Started July 5, 2026 • Forever To Go</p>
+      </div>
+    </header>
+
+    <!-- Daily Prompt Card -->
+    <section class="card glass prompt-card">
+      <div class="section-title">
+        <h3>Daily Connection Prompt</h3>
+        <span class="lock-badge" id="lockStatus">🔒 Encrypted</span>
+      </div>
+      <p class="prompt-question" id="promptText">Loading today's prompt...</p>
+
+      <div id="promptInputArea">
+        <textarea id="promptInput" placeholder="Write your secret response..."></textarea>
+        <button class="glow-btn" id="promptSubmitBtn" onclick="submitPrompt()">Lock In My Answer</button>
+      </div>
+
+      <div id="promptOutputArea" class="hidden">
+        <div class="answer-box my-answer">
+          <small id="myAnswerLabel">Your Response</small>
+          <p id="myAnswerDisplay"></p>
+        </div>
+        <div class="answer-box partner-answer">
+          <small id="partnerAnswerLabel">Partner Response</small>
+          <p id="partnerAnswerDisplay"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Mission Card -->
+    <section class="card glass task-card">
+      <div class="section-title">
+        <h3>Daily Love Mission</h3>
+        <span class="lock-badge" id="taskLockBadge">🔒 Locked</span>
+      </div>
+      
+      <p class="task-description" id="taskPromptText">
+        Loading today's love mission...
+      </p>
+
+      <div id="taskInputArea">
+        <textarea id="taskNoteInput" placeholder="How did you complete today's mission?"></textarea>
+        
+        <div class="photo-uploader">
+          <label for="taskCameraFile" class="upload-btn">📷 Proof Snap</label>
+          <input type="file" id="taskCameraFile" accept="image/*" capture="environment" hidden onchange="handleTaskPhoto(this)">
+          
+          <label for="taskGalleryFile" class="upload-btn">🖼️ Gallery</label>
+          <input type="file" id="taskGalleryFile" accept="image/*" hidden onchange="handleTaskPhoto(this)">
+        </div>
+
+        <div id="taskPreviewBox" class="preview-box hidden">
+          <img id="taskImagePreview" src="" alt="Task Proof">
+          <button class="remove-img" onclick="clearTaskPhoto()">✕</button>
+        </div>
+
+        <button class="glow-btn" id="taskSubmitBtn" onclick="submitTask()">Complete & Lock In Task</button>
+      </div>
+
+      <div id="taskResultArea" class="hidden">
+        <div class="answer-box my-answer">
+          <small id="myTaskLabel">Your Task Entry ✅</small>
+          <p id="myTaskDisplay"></p>
+          <img id="myTaskPhotoDisplay" class="task-reveal-img hidden" src="" alt="Your proof" />
+        </div>
+
+        <div class="answer-box partner-answer">
+          <small id="partnerTaskLabel">Partner Task Entry</small>
+          <p id="partnerTaskDisplay"></p>
+          <img id="partnerTaskPhotoDisplay" class="task-reveal-img hidden" src="" alt="Partner proof" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Memory Feed Card -->
+    <section class="card glass memory-card">
+      <div class="memory-header">
+        <h3>Our Memories</h3>
+        <div class="date-toggle-row">
+          <input type="date" id="datePicker" class="glass-input-date" onchange="loadDateMemories()">
+          <button id="viewAllBtn" class="toggle-view-btn" onclick="toggleMemoryView()">View All</button>
+        </div>
+      </div>
+
+      <div class="create-memory">
+        <textarea id="memoryText" placeholder="Record a precious moment for this day..."></textarea>
+        
+        <div class="photo-uploader">
+          <label for="cameraFile" class="upload-btn">📷 Camera</label>
+          <input type="file" id="cameraFile" accept="image/*" capture="environment" hidden onchange="handlePhotoSelect(this)">
+          
+          <label for="galleryFile" class="upload-btn">🖼️ Gallery</label>
+          <input type="file" id="galleryFile" accept="image/*" hidden onchange="handlePhotoSelect(this)">
+        </div>
+
+        <div id="previewBox" class="preview-box hidden">
+          <img id="imagePreview" src="" alt="Preview">
+          <button class="remove-img" onclick="clearPhoto()">✕</button>
+        </div>
+
+        <button class="glow-btn save-btn" id="saveMemoryBtn" onclick="saveMemory()">Save Memory</button>
+      </div>
+
+      <div id="memoryFeed" class="memory-feed">
+        <!-- Feed output -->
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
