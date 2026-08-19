@@ -2,11 +2,7 @@ const CONFIG = {
   startDate: new Date("2026-07-05T00:00:00"),
   // DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
   apiEndpoint: "https://script.google.com/macros/s/AKfycbxDeJZ9UDFyKDXUoJwjLZUpgW_rNjlKGNWp0IIvz4K6Dvv6LAxxhcB5Ap1k56z4zDUk/exec",
-  currentUser: localStorage.getItem("qalbi_authenticated_user") || null,
-  pins: {
-    Zaroo: "1111",
-    Salma: "2222"
-  }
+  currentUser: localStorage.getItem("qalbi_authenticated_user") || null
 };
 
 let selectedPhotoBase64 = "";
@@ -48,15 +44,42 @@ function selectUser(user) {
   document.getElementById("pinInput").focus();
 }
 
-function verifyPin() {
+async function verifyPin() {
   const pinEntered = document.getElementById("pinInput").value;
-  if (pinEntered === CONFIG.pins[selectedUserAttempt]) {
-    CONFIG.currentUser = selectedUserAttempt;
-    localStorage.setItem("qalbi_authenticated_user", CONFIG.currentUser);
-    checkAuth();
-  } else {
-    alert("Incorrect PIN! Please try again.");
-    document.getElementById("pinInput").value = "";
+  if (!pinEntered) return;
+
+  const unlockBtn = document.querySelector("#pinBox .glow-btn");
+  const originalText = unlockBtn.innerText;
+  unlockBtn.innerText = "Verifying...";
+  unlockBtn.disabled = true;
+
+  try {
+    const res = await fetch(CONFIG.apiEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        action: "verifyPin",
+        user: selectedUserAttempt,
+        pin: pinEntered
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      CONFIG.currentUser = selectedUserAttempt;
+      localStorage.setItem("qalbi_authenticated_user", CONFIG.currentUser);
+      checkAuth();
+    } else {
+      alert("Incorrect PIN! Please try again.");
+      document.getElementById("pinInput").value = "";
+    }
+  } catch (err) {
+    console.error("PIN verification error:", err);
+    alert("Connection error! Please check your network and try again.");
+  } finally {
+    unlockBtn.innerText = originalText;
+    unlockBtn.disabled = false;
   }
 }
 
