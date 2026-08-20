@@ -186,12 +186,16 @@ function handleTaskPhoto(input) {
 
 function clearTaskPhoto() {
   selectedTaskPhotoBase64 = "";
-  document.getElementById("taskPreviewBox").classList.add("hidden");
+  document.getElementById("taskPreviewBox").classList.remove("hidden");
 }
 
 // Backend Data Sync
 async function loadInitialData() {
-  const date = document.getElementById("datePicker").value;
+  let date = document.getElementById("datePicker").value;
+  if (!date) {
+    date = new Date().toISOString().split("T")[0];
+  }
+
   try {
     const res = await fetch(`${CONFIG.apiEndpoint}?action=getInitialData&date=${date}&user=${CONFIG.currentUser}`);
     const data = await res.json();
